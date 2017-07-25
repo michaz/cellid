@@ -10,9 +10,10 @@ import android.telephony.NeighboringCellInfo;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
-import com.firebase.client.Firebase;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationResult;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -52,10 +53,8 @@ public class LocationUpdateIntentService extends IntentService {
                     Log.i("allCellInfo", cellInfo.toString());
                     if (cellInfo.isRegistered()) {
                         if (cellInfo instanceof CellInfoLte) {
-                            Firebase newCellUpdate = new Firebase("https://brilliant-fire-9861.firebaseio.com/cellInfoLte")
-                                    .push();
+                            DatabaseReference newCellUpdate = FirebaseDatabase.getInstance().getReference().child("cellInfoLte").push();
                             HashMap<String, Object> values = new HashMap<>();
-
                             values.put("timestamp", Calendar.getInstance().getTimeInMillis());
                             CellInfoLte cellInfoLte = (CellInfoLte) cellInfo;
                             values.put("deviceId", tm.getDeviceId());
@@ -70,8 +69,7 @@ public class LocationUpdateIntentService extends IntentService {
                             newCellUpdate.setValue(values);
                             Log.i("locationUpdate", "Logged Lte.");
                         } else if (cellInfo instanceof CellInfoGsm) {
-                            Firebase newCellUpdate = new Firebase("https://brilliant-fire-9861.firebaseio.com/cellInfoGsm")
-                                    .push();
+                            DatabaseReference newCellUpdate = FirebaseDatabase.getInstance().getReference().child("cellInfoGsm").push();
                             newCellUpdate.child("timestamp").setValue(Calendar.getInstance().getTimeInMillis());
                             CellInfoGsm cellInfoGsm = (CellInfoGsm) cellInfo;
                             newCellUpdate.child("deviceId").setValue((tm.getDeviceId()));

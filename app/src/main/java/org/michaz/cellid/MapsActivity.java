@@ -1,19 +1,18 @@
 package org.michaz.cellid;
 
 import android.content.Intent;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 
-import com.firebase.client.ChildEventListener;
-import com.firebase.client.DataSnapshot;
-import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -45,10 +44,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        Firebase.setAndroidContext(this);
-
-        new Firebase("https://brilliant-fire-9861.firebaseio.com/cellInfoLte")
-                .addChildEventListener(new ChildEventListener() {
+        FirebaseDatabase.getInstance().getReference().child("cellInfoLte").
+                addChildEventListener(new ChildEventListener() {
                     public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                         LatLng latLng = new LatLng((double) dataSnapshot.child("lat").getValue(), (double) dataSnapshot.child("lng").getValue());
                         mMap.addMarker(new MarkerOptions().position(latLng).title(dataSnapshot.toString()));
@@ -56,7 +53,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     public void onChildRemoved(DataSnapshot dataSnapshot) { }
                     public void onChildChanged(DataSnapshot dataSnapshot, String s) { }
                     public void onChildMoved(DataSnapshot dataSnapshot, String s) { }
-                    public void onCancelled(FirebaseError firebaseError) { }
+                    public void onCancelled(DatabaseError databaseError) { }
                 });
     }
 }
